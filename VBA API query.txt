@@ -1,0 +1,40 @@
+Sub ExtractWithNotes()
+
+ ActiveCell.FormulaR1C1 = "=NOW()"
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    ActiveCell.Offset(0, 1).Select
+ 
+    Dim mxm As Object
+    Dim response As String
+    Dim authToken As String
+
+ Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    Set mxm = CreateObject("MSXML2.XMLHTTP")
+    With mxm
+        .Open "GET", "https://api.coinbase.com/v2/prices/LINK-GBP/sell", True
+        .SetRequestHeader "Authentication", "0123456789"
+        .SetRequestHeader "Prefer", "respond-async"
+        .SetRequestHeader "Content-Type", "application/json; odata=minimalmetadata"
+        
+        .Send
+        ' waiting for response
+        While mxm.readyState <> 4
+            DoEvents
+        Wend
+        
+        response = .ResponseText
+        
+        ActiveCell = response
+
+    End With
+ 
+    Debug.Print response
+ 
+End Sub
+
+
+
+
